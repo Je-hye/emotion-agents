@@ -28,7 +28,9 @@ async def generate_image(
         n=1,
     )
     image_url = response.data[0].url
-    image_bytes = httpx.get(image_url).content
+    async with httpx.AsyncClient() as http_client:
+        http_response = await http_client.get(image_url)
+        image_bytes = http_response.content
 
     output_dir = Path("data/images")
     output_dir.mkdir(parents=True, exist_ok=True)

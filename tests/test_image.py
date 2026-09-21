@@ -1,5 +1,4 @@
 import pytest
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 
@@ -16,12 +15,20 @@ def mock_openai_and_httpx(tmp_path):
         mock_response.data = [MagicMock(url="https://example.com/image.png")]
         client.images.generate = AsyncMock(return_value=mock_response)
 
-        mock_httpx.get.return_value.content = b"fake_image_bytes"
+        # httpx.AsyncClient() async context manager mock
+        mock_http_client = AsyncMock()
+        mock_http_client.get = AsyncMock(
+            return_value=MagicMock(content=b"fake_image_bytes")
+        )
+        mock_async_cm = MagicMock()
+        mock_async_cm.__aenter__ = AsyncMock(return_value=mock_http_client)
+        mock_async_cm.__aexit__ = AsyncMock(return_value=False)
+        mock_httpx.AsyncClient.return_value = mock_async_cm
 
         # Path("data/images") → tmp_path
         def path_side_effect(p):
             if str(p).startswith("data/images"):
-                return tmp_path / Path(p).name
+                return tmp_path / p
             return tmp_path / p
         mock_path_cls.side_effect = path_side_effect
 
@@ -50,7 +57,7 @@ async def test_generate_image_prompt_includes_aesthetic(mock_openai_and_httpx):
 
 @pytest.mark.asyncio
 async def test_generate_image_returns_path_string(mock_openai_and_httpx):
-    client, tmp_path = mock_openai_and_httpx
+    _, _ = mock_openai_and_httpx
     with patch("services.image.Path") as mock_path_cls:
         output_dir = MagicMock()
         file_path = MagicMock()
