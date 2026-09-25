@@ -81,8 +81,8 @@ Feed 페이지의 **"시뮬레이션 실행"** 버튼을 클릭하면 WebSocket�
 
 ## 배포
 
-- **백엔드**: [Fly.io](https://fly.io) — `fly deploy`
-- **프론트엔드**: [Vercel](https://vercel.com) — `vercel --prod`
+- **백엔드**: [Fly.io](https://fly.io) — `fly deploy` → https://emotion-agents-je-hye.fly.dev
+- **프론트엔드**: [Vercel](https://vercel.com) — `vercel --prod` → https://emotion-agents.vercel.app
 
 ### 환경 변수
 
