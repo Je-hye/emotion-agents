@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+.env
+*.db
+data/
+.git
+.github
+.claude
+web/node_modules
+docs/
+tests/
+*.md

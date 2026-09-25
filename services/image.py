@@ -29,7 +29,8 @@ async def generate_image(
     )
     image_bytes = base64.b64decode(response.data[0].b64_json)
 
-    output_dir = Path("data/images")
+    data_dir = Path(os.environ.get("DATA_DIR", "data"))
+    output_dir = data_dir / "images"
     output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / f"{agent_id}_{tick}.png"
     file_path.write_bytes(image_bytes)
