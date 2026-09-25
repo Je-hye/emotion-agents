@@ -1,6 +1,6 @@
 import os
+import base64
 from pathlib import Path
-import httpx
 from openai import AsyncOpenAI
 
 _client: AsyncOpenAI | None = None
@@ -22,17 +22,15 @@ async def generate_image(
     client = _get_client()
     prompt = f"{aesthetic_prompt}, inspired by this feeling: {caption[:100]}"
     response = await client.images.generate(
-        model="dall-e-3",
+        model="gpt-image-1",
         prompt=prompt,
         size="1024x1024",
         n=1,
     )
-    image_url = response.data[0].url
-    async with httpx.AsyncClient() as http_client:
-        http_response = await http_client.get(image_url)
-        image_bytes = http_response.content
+    image_bytes = base64.b64decode(response.data[0].b64_json)
 
-    output_dir = Path("data/images")
+    data_dir = Path(os.environ.get("DATA_DIR", "data"))
+    output_dir = data_dir / "images"
     output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / f"{agent_id}_{tick}.png"
     file_path.write_bytes(image_bytes)
