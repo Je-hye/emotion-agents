@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from db.database import Database
 from api.deps import get_db
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 class ScoreUpdate(BaseModel):
-    score: float
+    score: float = Field(ge=0.0, le=1.0)
 
 
 def _post_to_dict(post, interactions):
@@ -52,5 +52,7 @@ def get_post(post_id: int, db: Database = Depends(get_db)):
 
 @router.patch("/posts/{post_id}/score")
 def update_score(post_id: int, body: ScoreUpdate, db: Database = Depends(get_db)):
-    db.update_quality_score(post_id, body.score)
+    updated = db.update_quality_score(post_id, body.score)
+    if updated == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
     return {"post_id": post_id, "score": body.score}

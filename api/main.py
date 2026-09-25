@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-images_dir = Path("data/images")
+images_dir = Path(__file__).parent.parent / "data" / "images"
 images_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/data/images", StaticFiles(directory=str(images_dir)), name="images")
 

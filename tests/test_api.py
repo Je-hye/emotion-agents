@@ -96,6 +96,18 @@ def test_get_graph(client):
     assert "anxiety" in node_ids
 
 
+def test_patch_score_not_found(client):
+    r = client.patch("/api/posts/999/score", json={"score": 0.5})
+    assert r.status_code == 404
+
+
+def test_patch_score_out_of_range(client):
+    db = client.app.dependency_overrides[get_db]()
+    post_id = db.save_post("anxiety", "cap", None, tick=0)
+    r = client.patch(f"/api/posts/{post_id}/score", json={"score": 1.5})
+    assert r.status_code == 422
+
+
 def test_get_stats(client):
     db = client.app.dependency_overrides[get_db]()
     post_id = db.save_post("anxiety", "cap", None, tick=0)

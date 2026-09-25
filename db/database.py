@@ -129,12 +129,13 @@ class Database:
         row = self.conn.execute("SELECT MAX(tick) FROM posts").fetchone()
         return row[0]
 
-    def update_quality_score(self, post_id: int, score: float) -> None:
-        self.conn.execute(
+    def update_quality_score(self, post_id: int, score: float) -> int:
+        cur = self.conn.execute(
             "UPDATE posts SET quality_score = ? WHERE id = ?",
             (score, post_id),
         )
         self.conn.commit()
+        return cur.rowcount
 
     def get_agent_stats(self) -> dict:
         agents = self.conn.execute("SELECT id FROM agents").fetchall()
