@@ -123,3 +123,27 @@ def test_get_max_tick_returns_max(db):
     db.save_post("anxiety", "a", None, tick=3)
     db.save_post("anxiety", "b", None, tick=7)
     assert db.get_max_tick() == 7
+
+
+def test_update_quality_score(db):
+    post_id = db.save_post("anxiety", "cap", None, tick=0)
+    db.update_quality_score(post_id, 0.85)
+    posts = db.get_all_posts(agent_id="anxiety")
+    assert posts[0].quality_score == pytest.approx(0.85)
+
+
+def test_get_agent_stats_empty(db):
+    stats = db.get_agent_stats()
+    assert "anxiety" in stats
+    assert stats["anxiety"]["post_count"] == 0
+    assert stats["anxiety"]["received_likes"] == 0
+
+
+def test_get_agent_stats_counts(db):
+    post_id = db.save_post("anxiety", "cap", None, tick=0)
+    db.save_interaction("excitement", post_id, "like", None, tick=1)
+    db.save_interaction("excitement", post_id, "comment", "reply", tick=1)
+    stats = db.get_agent_stats()
+    assert stats["anxiety"]["post_count"] == 1
+    assert stats["anxiety"]["received_likes"] == 1
+    assert stats["anxiety"]["received_comments"] == 1
