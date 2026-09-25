@@ -3,6 +3,8 @@ from anthropic import AsyncAnthropic
 
 _client: AsyncAnthropic | None = None
 
+DISCLOSURE = "\n\n이 게시물은 AI 아트 프로젝트(@emotion_agents)가 생성했습니다."
+
 
 def _get_client() -> AsyncAnthropic:
     global _client
@@ -22,7 +24,7 @@ async def generate_caption(agent_id: str, persona_prompt: str) -> str:
             "content": "지금 Instagram에 올릴 캡션을 써줘. 150자 이내로, 해시태그 없이.",
         }],
     )
-    return response.content[0].text.strip()
+    return response.content[0].text.strip() + DISCLOSURE
 
 
 async def generate_comment(
