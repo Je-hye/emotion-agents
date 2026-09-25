@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
-from api.routes import posts, agents, graph
+from api.routes import posts, agents, graph, ws as ws_routes
 
 app = FastAPI(title="emotion-agents API")
 
@@ -28,3 +28,4 @@ app.mount("/data/images", StaticFiles(directory=str(images_dir)), name="images")
 app.include_router(posts.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
 app.include_router(graph.router, prefix="/api")
+app.include_router(ws_routes.router)
