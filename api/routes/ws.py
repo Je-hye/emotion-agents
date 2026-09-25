@@ -1,12 +1,12 @@
 import asyncio
+import logging
 from typing import List
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel, Field
 
 from api.deps import get_db
-from config import AGENTS, FOLLOWS, AFFINITIES
+from config import AGENTS, FOLLOWS
 from agents.base import AgentBase
-from simulation.engine import SimulationEngine
 
 router = APIRouter()
 
@@ -55,6 +55,7 @@ class SimulateRequest(BaseModel):
 async def run_simulate(body: SimulateRequest):
     if manager._running:
         raise HTTPException(status_code=409, detail="Simulation already running")
+    manager._running = True  # C1: create_task 이전에 즉시 세팅
 
     db = get_db()
     agents = [
@@ -70,16 +71,16 @@ async def run_simulate(body: SimulateRequest):
     ]
     db.seed_follows(FOLLOWS)
 
-    engine = SimulationEngine(agents, verbose=False)
-
     async def run():
-        manager._running = True
         try:
             for tick in range(body.ticks):
                 await asyncio.gather(*[a.maybe_post(tick) for a in agents])
                 await asyncio.gather(*[a.interact(tick) for a in agents])
                 await manager.broadcast({"type": "tick", "tick": tick})
             await manager.broadcast({"type": "done", "ticks": body.ticks})
+        except Exception as exc:
+            logging.error("Simulation error: %s", exc)
+            await manager.broadcast({"type": "error", "detail": str(exc)})
         finally:
             manager._running = False
 

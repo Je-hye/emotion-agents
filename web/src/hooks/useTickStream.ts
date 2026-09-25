@@ -22,9 +22,19 @@ export function useTickStream(
         onDone()
         ws.close()
       }
+      if (msg.type === 'error') {
+        setRunning(false)
+        ws.close()
+      }
     }
 
     ws.onclose = () => setRunning(false)
+    ws.onerror = () => {
+      setRunning(false)
+      wsRef.current = null
+    }
+
+    await new Promise<void>((resolve) => { ws.onopen = () => resolve() })
 
     setRunning(true)
     await fetch('/api/simulate', {
