@@ -73,4 +73,4 @@ async def test_generate_caption_includes_disclosure(mock_anthropic):
 
     from services.caption import generate_caption
     result = await generate_caption("anxiety", "persona")
-    assert result.endswith("이 게시물은 AI 아트 프로젝트(@emotion_agents)가 생성했습니다.")
+    assert result.endswith("\n\n이 게시물은 AI 아트 프로젝트(@emotion_agents)가 생성했습니다.")
