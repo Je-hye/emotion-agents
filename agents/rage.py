@@ -11,7 +11,7 @@ PERSONA_PROMPT = (
 )
 
 AESTHETIC_PROMPT = (
-    "extreme high contrast, tight close-up, red and black tones, "
-    "harsh directional light, tense aggressive composition, "
-    "raw intense atmosphere, dramatic cinematic photography"
+    "abstract expressionist painting, deep crimson and charcoal palette, "
+    "turbulent dynamic brushstrokes, emotional tension through color and form, "
+    "fine art close-up, dramatic contrast, no people"
 )
