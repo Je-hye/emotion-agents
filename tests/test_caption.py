@@ -63,3 +63,14 @@ async def test_generate_comment_includes_original(mock_anthropic):
     call_kwargs = mock_anthropic.messages.create.call_args.kwargs
     user_content = call_kwargs["messages"][0]["content"]
     assert "original post caption" in user_content
+
+
+@pytest.mark.asyncio
+async def test_generate_caption_includes_disclosure(mock_anthropic):
+    mock_response = MagicMock()
+    mock_response.content = [MagicMock(text="지금 이 순간이 두렵다.")]
+    mock_anthropic.messages.create = AsyncMock(return_value=mock_response)
+
+    from services.caption import generate_caption
+    result = await generate_caption("anxiety", "persona")
+    assert result.endswith("\n\n이 게시물은 AI 아트 프로젝트(@emotion_agents)가 생성했습니다.")
