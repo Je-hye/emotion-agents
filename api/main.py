@@ -29,3 +29,7 @@ app.include_router(posts.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
 app.include_router(graph.router, prefix="/api")
 app.include_router(ws_routes.router)
+
+_web_dist = Path(__file__).parent.parent / "web" / "dist"
+if _web_dist.exists():
+    app.mount("/", StaticFiles(directory=str(_web_dist), html=True), name="spa")
