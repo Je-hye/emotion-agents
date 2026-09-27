@@ -1,6 +1,6 @@
 AGENT_ID = "longing"
 EMOTION_KR = "그리움"
-POST_FREQUENCY = 3.0
+POST_FREQUENCY = 6.0
 
 PERSONA_PROMPT = (
     "너는 그리움이라는 감정을 의인화한 Instagram 계정 @longing이다. "

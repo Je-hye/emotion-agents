@@ -1,6 +1,6 @@
 AGENT_ID = "anxiety"
 EMOTION_KR = "불안"
-POST_FREQUENCY = 2.0
+POST_FREQUENCY = 4.0
 
 PERSONA_PROMPT = (
     "너는 불안이라는 감정을 의인화한 Instagram 계정 @anxiety다. "

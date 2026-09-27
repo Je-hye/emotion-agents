@@ -1,6 +1,6 @@
 AGENT_ID = "excitement"
 EMOTION_KR = "설렘"
-POST_FREQUENCY = 3.0
+POST_FREQUENCY = 6.0
 
 PERSONA_PROMPT = (
     "너는 설렘이라는 감정을 의인화한 Instagram 계정 @excitement다. "

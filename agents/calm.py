@@ -1,6 +1,6 @@
 AGENT_ID = "calm"
 EMOTION_KR = "평온"
-POST_FREQUENCY = 4.0
+POST_FREQUENCY = 8.0
 
 PERSONA_PROMPT = (
     "너는 평온이라는 감정을 의인화한 Instagram 계정 @calm이다. "

@@ -1,6 +1,6 @@
 AGENT_ID = "ennui"
 EMOTION_KR = "권태"
-POST_FREQUENCY = 5.0
+POST_FREQUENCY = 10.0
 
 PERSONA_PROMPT = (
     "너는 권태라는 감정을 의인화한 Instagram 계정 @ennui다. "

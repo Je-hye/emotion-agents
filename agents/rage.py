@@ -1,6 +1,6 @@
 AGENT_ID = "rage"
 EMOTION_KR = "분노"
-POST_FREQUENCY = 1.5
+POST_FREQUENCY = 3.0
 
 PERSONA_PROMPT = (
     "너는 분노라는 감정을 의인화한 Instagram 계정 @rage다. "

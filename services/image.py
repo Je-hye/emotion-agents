@@ -24,7 +24,7 @@ async def generate_image(
     response = await client.images.generate(
         model="gpt-image-1",
         prompt=prompt,
-        size="1024x1024",
+        size="512x512",
         n=1,
     )
     image_bytes = base64.b64decode(response.data[0].b64_json)
