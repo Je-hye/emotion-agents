@@ -9,6 +9,7 @@ export default function Feed() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [filterAgent, setFilterAgent] = useState<string>('')
   const [tickLabel, setTickLabel] = useState<string>('')
+  const [ticks, setTicks] = useState(6)
 
   useEffect(() => {
     fetchAgents().then(setAgents)
@@ -28,7 +29,7 @@ export default function Feed() {
     fetchPosts(filterAgent ? { agent_id: filterAgent } : undefined).then(setPosts)
   }, [filterAgent])
 
-  const { start, running } = useTickStream(handleTick, handleDone)
+  const { start, stop, running } = useTickStream(handleTick, handleDone)
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
@@ -51,15 +52,35 @@ export default function Feed() {
       </div>
       <div className="flex items-center gap-3 mb-4">
         <button
-          onClick={() => start(24)}
+          onClick={() => start(ticks)}
           disabled={running}
           className="px-4 py-1.5 rounded-full text-xs bg-black text-white disabled:opacity-40"
         >
           {running ? tickLabel || '실행 중...' : '시뮬레이션 실행'}
         </button>
+        {running && (
+          <button
+            onClick={stop}
+            className="px-4 py-1.5 rounded-full text-xs border border-gray-400 text-gray-600"
+          >
+            중단
+          </button>
+        )}
+        <label className="flex items-center gap-1.5 text-xs text-gray-500">
+          <input
+            type="number"
+            min={1}
+            max={100}
+            value={ticks}
+            disabled={running}
+            onChange={e => setTicks(Math.min(100, Math.max(1, Number(e.target.value))))}
+            className="w-14 border border-gray-300 rounded px-1.5 py-0.5 text-center text-xs disabled:opacity-40"
+          />
+          ticks
+        </label>
       </div>
       {posts.length === 0 && (
-        <p className="text-gray-400 text-sm text-center py-12">포스트가 없습니다. cli.py run 후 새로고침하세요.</p>
+        <p className="text-gray-400 text-sm text-center py-12">포스트가 없습니다. 시뮬레이션 실행 후 새로고침하세요.</p>
       )}
       <div className="space-y-4">
         {posts.map(post => <PostCard key={post.id} post={post} />)}

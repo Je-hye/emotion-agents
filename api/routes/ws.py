@@ -15,6 +15,7 @@ class ConnectionManager:
     def __init__(self):
         self.active: List[WebSocket] = []
         self._running = False
+        self._task: asyncio.Task | None = None
 
     async def connect(self, ws: WebSocket):
         await ws.accept()
@@ -32,6 +33,16 @@ class ConnectionManager:
                 dead.append(ws)
         for ws in dead:
             self.disconnect(ws)
+
+    async def cancel(self):
+        if self._task and not self._task.done():
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+        self._running = False
+        self._task = None
 
 
 manager = ConnectionManager()
@@ -55,7 +66,7 @@ class SimulateRequest(BaseModel):
 async def run_simulate(body: SimulateRequest):
     if manager._running:
         raise HTTPException(status_code=409, detail="Simulation already running")
-    manager._running = True  # C1: create_task 이전에 즉시 세팅
+    manager._running = True
 
     db = get_db()
     agents = [
@@ -78,11 +89,23 @@ async def run_simulate(body: SimulateRequest):
                 await asyncio.gather(*[a.interact(tick) for a in agents])
                 await manager.broadcast({"type": "tick", "tick": tick})
             await manager.broadcast({"type": "done", "ticks": body.ticks})
+        except asyncio.CancelledError:
+            await manager.broadcast({"type": "cancelled"})
+            raise
         except Exception as exc:
             logging.error("Simulation error: %s", exc)
             await manager.broadcast({"type": "error", "detail": str(exc)})
         finally:
             manager._running = False
+            manager._task = None
 
-    asyncio.create_task(run())
+    manager._task = asyncio.create_task(run())
     return {"status": "started", "ticks": body.ticks}
+
+
+@router.delete("/api/simulate")
+async def cancel_simulate():
+    if not manager._running:
+        raise HTTPException(status_code=404, detail="No simulation running")
+    await manager.cancel()
+    return {"status": "cancelled"}

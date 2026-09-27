@@ -17,13 +17,9 @@ export function useTickStream(
     ws.onmessage = (e) => {
       const msg = JSON.parse(e.data)
       if (msg.type === 'tick') onTick(msg.tick)
-      if (msg.type === 'done') {
+      if (msg.type === 'done' || msg.type === 'cancelled' || msg.type === 'error') {
         setRunning(false)
-        onDone()
-        ws.close()
-      }
-      if (msg.type === 'error') {
-        setRunning(false)
+        if (msg.type === 'done') onDone()
         ws.close()
       }
     }
@@ -44,5 +40,14 @@ export function useTickStream(
     })
   }, [running, onTick, onDone])
 
-  return { start, running }
+  const stop = useCallback(async () => {
+    if (wsRef.current) {
+      wsRef.current.close()
+      wsRef.current = null
+    }
+    setRunning(false)
+    await fetch('/api/simulate', { method: 'DELETE' })
+  }, [])
+
+  return { start, stop, running }
 }
